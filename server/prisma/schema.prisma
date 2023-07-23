@@ -12,6 +12,7 @@ model User {
   password String
   uuid     String   @unique
   profile  Profile?
+  posts    Post[]
 }
 
 model Profile {
@@ -21,4 +22,12 @@ model Profile {
   name     String
   age      Int
   birthday DateTime
+}
+
+model Post {
+  id        Int    @id @default(autoincrement())
+  title     String
+  content   String
+  author    User   @relation(fields: [author_id], references: [id])
+  author_id Int
 }
