@@ -2,6 +2,8 @@
 *.sqlite
 *.sqlite3
 *.db
+*.db-journal
+migration.sql
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,linux,node,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,linux,node,visualstudiocode
