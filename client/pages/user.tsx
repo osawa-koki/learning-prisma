@@ -35,23 +35,24 @@ const Component = (): JSX.Element => {
     const response = await fetch(url)
     if (response.status === 404) {
       toast('User not found.')
-      router.push('/users/')
+      await router.push('/users/')
     }
-    return response.json()
+    return await response.json()
   })
 
   const deleteUser = (): void => {
+    if (userId == null) return
     if (confirm('Are you sure?')) {
       fetch(`${setting.apiPath}/api/users/${userId}`, {
         method: 'DELETE'
       })
-      .then(() => {
-        router.push('/users/')
-        toast('User deleted.')
-      })
-      .catch((err) => {
-        toast(err.message, { type: 'error' })
-      })
+        .then(async () => {
+          await router.push('/users/')
+          toast('User deleted.')
+        })
+        .catch((err) => {
+          toast(err.message, { type: 'error' })
+        })
     }
   }
 
