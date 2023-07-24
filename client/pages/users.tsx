@@ -1,10 +1,11 @@
 import React from 'react'
 import Layout from '../components/Layout'
 import useSWR from 'swr'
-import { Alert, Table } from 'react-bootstrap'
+import { Alert, Badge, Table } from 'react-bootstrap'
 import setting from '../setting'
 import Link from 'next/link'
 import fetcher from '../src/fetcher'
+import router from 'next/router'
 
 interface IUser {
   id: number
@@ -52,7 +53,12 @@ const Component = (): JSX.Element => {
 export default function UsersPage (): JSX.Element {
   return (
     <Layout>
-      <h1>Users</h1>
+      <h1 className='d-flex justify-content-between'>
+        Users
+        <Badge role='button' onClick={() => {
+          router.push('/users/new')
+        }}>New</Badge>
+      </h1>
       <Component />
     </Layout>
   )
