@@ -129,13 +129,13 @@ app.post('/posts', async (req, res) => {
   try {
     const title = req.body.title
     const content = req.body.content
-    const author_id = Number(req.body.author_id)
+    const authorId = Number(req.body.author_id)
 
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        author_id
+        author_id: authorId
       },
       select: PostFat
     })
