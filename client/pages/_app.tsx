@@ -1,12 +1,14 @@
 import React from 'react'
 import { type AppProps } from 'next/app'
+import Head from 'next/head'
+
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import '../styles/style.scss'
 import '../styles/menu.scss'
-
-import Head from 'next/head'
 
 import setting from '../setting'
 
@@ -24,6 +26,7 @@ export default function MyApp ({ Component, pageProps }: AppProps): JSX.Element 
         />
       </Head>
       <Component {...pageProps} />
+      <ToastContainer />
     </>
   )
 }

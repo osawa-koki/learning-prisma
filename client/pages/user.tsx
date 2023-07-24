@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { Alert, Table } from 'react-bootstrap'
+import { BsTrashFill } from 'react-icons/bs'
+import { toast } from 'react-toastify'
 import setting from '../setting'
 import Layout from '../components/Layout'
-import fetcher from '../src/fetcher'
 
 interface IUser {
   id: number
@@ -30,7 +31,30 @@ const Component = (): JSX.Element => {
     user_id?: string
   } = router.query
 
-  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
+  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, async (url: string) => {
+    const response = await fetch(url)
+    if (response.status === 404) {
+      toast('User not found.')
+      await router.push('/users/')
+    }
+    return await response.json()
+  })
+
+  const deleteUser = (): void => {
+    if (userId == null) return
+    if (confirm('Are you sure?')) {
+      fetch(`${setting.apiPath}/api/users/${userId}`, {
+        method: 'DELETE'
+      })
+        .then(async () => {
+          await router.push('/users/')
+          toast('User deleted.')
+        })
+        .catch((err) => {
+          toast(err.message, { type: 'error' })
+        })
+    }
+  }
 
   if (error != null) {
     return <Alert variant="danger">{error}</Alert>
@@ -40,6 +64,9 @@ const Component = (): JSX.Element => {
   }
 
   return <>
+    <div className='d-flex flex-row-reverse'>
+      <BsTrashFill role='button' className='text-danger' onClick={deleteUser} />
+    </div>
     <h2>Profile</h2>
     <Table striped bordered hover>
       <tbody>
@@ -53,15 +80,15 @@ const Component = (): JSX.Element => {
         </tr>
         <tr>
           <th>Name</th>
-          <td>{user?.profile.name}</td>
+          <td>{user?.profile?.name}</td>
         </tr>
         <tr>
           <th>Age</th>
-          <td>{user?.profile.age}</td>
+          <td>{user?.profile?.age}</td>
         </tr>
         <tr>
           <th>Birthday</th>
-          <td>{user?.profile.birthday.toString()}</td>
+          <td>{user?.profile?.birthday?.toString()}</td>
         </tr>
       </tbody>
     </Table>
@@ -76,7 +103,7 @@ const Component = (): JSX.Element => {
         </tr>
       </thead>
       <tbody>
-        {user?.posts.map((post) => (
+        {user?.posts?.map((post) => (
           <tr key={post.id}>
             <td>
               <Link href={`/post/?post_id=${post.id}`}>#{post.id}</Link>
