@@ -41,7 +41,7 @@ export default function UsersPage (): JSX.Element {
           {users.map((user) => (
             <tr key={user.id}>
               <td>
-                <Link href={`/users/${user.id}`}>#{user.id}</Link>
+                <Link href={`/user/?user_id=${user.id}`}>#{user.id}</Link>
               </td>
               <td>{user.profile.name}</td>
             </tr>
