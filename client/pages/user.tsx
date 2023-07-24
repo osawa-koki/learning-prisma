@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { Alert, Table } from 'react-bootstrap'
+import { BsTrashFill } from 'react-icons/bs'
 import setting from '../setting'
 import Layout from '../components/Layout'
 import fetcher from '../src/fetcher'
@@ -32,6 +33,20 @@ const Component = (): JSX.Element => {
 
   const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
 
+  const deleteUser = (): void => {
+    if (confirm('Are you sure?')) {
+      fetch(`${setting.apiPath}/api/users/${userId}`, {
+        method: 'DELETE'
+      })
+      .then(() => {
+        router.push('/users/')
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+    }
+  }
+
   if (error != null) {
     return <Alert variant="danger">{error}</Alert>
   }
@@ -40,6 +55,9 @@ const Component = (): JSX.Element => {
   }
 
   return <>
+    <div className='d-flex flex-row-reverse'>
+      <BsTrashFill role='button' className='text-danger' onClick={deleteUser} />
+    </div>
     <h2>Profile</h2>
     <Table striped bordered hover>
       <tbody>
