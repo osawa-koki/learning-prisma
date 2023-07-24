@@ -231,7 +231,7 @@ router.delete('/posts/:id', async (req, res) => {
   }
 })
 
-app.use('/api', router);
+app.use('/api', router)
 app.listen(8000, () => {
   console.log("Server is running on 'http://localhost:8000'.")
 })

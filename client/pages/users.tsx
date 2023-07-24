@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
-import { Table } from 'react-bootstrap'
+import { Alert, Table } from 'react-bootstrap'
 import setting from '../setting'
 import Link from 'next/link'
 
-type IUser = {
-  id: number,
-  uuid: string,
+interface IUser {
+  id: number
+  uuid: string
   profile: {
     name: string
   }
 }
 
-export default function UsersPage(): JSX.Element {
-
+export default function UsersPage (): JSX.Element {
   const [users, setUsers] = useState<IUser[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`${setting.apiPath}/api/users`)
-      .then(res => res.json())
-      .then(data => setUsers(data))
+      .then(async (res) => await res.json())
+      .then((data) => { setUsers(data) })
+      .catch((err) => { setError(err.message) })
   }, [])
+
+  if (error != null) {
+    return <Alert variant="danger">{error}</Alert>
+  }
 
   return (
     <Layout>
