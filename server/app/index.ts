@@ -12,6 +12,7 @@ const prisma = new PrismaClient()
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'));
 app.use((_req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000')
   res.header('Access-Control-Allow-Headers', '*')
