@@ -13,13 +13,14 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use((_req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'localhost:3000')
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000')
   res.header('Access-Control-Allow-Headers', '*')
   res.header('Access-Control-Allow-Methods', '*')
   next()
 })
+const router = express.Router()
 
-app.get('/users', async (req, res) => {
+router.get('/users', async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: UserSlim,
@@ -33,7 +34,7 @@ app.get('/users', async (req, res) => {
   }
 })
 
-app.get('/users/:id', async (req, res) => {
+router.get('/users/:id', async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: Number(req.params.id) },
@@ -54,7 +55,7 @@ app.get('/users/:id', async (req, res) => {
   }
 })
 
-app.post('/users', async (req, res) => {
+router.post('/users', async (req, res) => {
   try {
     const password = req.body.password
     const name = req.body.name
@@ -90,7 +91,7 @@ app.post('/users', async (req, res) => {
   }
 })
 
-app.put('/users/:id', async (req, res) => {
+router.put('/users/:id', async (req, res) => {
   try {
     const name = req.body.name
     const user = await prisma.user.update({
@@ -115,7 +116,7 @@ app.put('/users/:id', async (req, res) => {
   }
 })
 
-app.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', async (req, res) => {
   try {
     const user = await prisma.user.delete({
       where: { id: Number(req.params.id) },
@@ -132,7 +133,7 @@ app.delete('/users/:id', async (req, res) => {
   }
 })
 
-app.get('/posts', async (req, res) => {
+router.get('/posts', async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
       orderBy: {
@@ -167,7 +168,7 @@ app.get('/posts/:id', async (req, res) => {
   }
 })
 
-app.post('/posts', async (req, res) => {
+router.post('/posts', async (req, res) => {
   try {
     const title = req.body.title
     const content = req.body.content
@@ -192,7 +193,7 @@ app.post('/posts', async (req, res) => {
   }
 })
 
-app.put('/posts/:id', async (req, res) => {
+router.put('/posts/:id', async (req, res) => {
   try {
     const title = req.body.title
     const post = await prisma.post.update({
@@ -213,7 +214,7 @@ app.put('/posts/:id', async (req, res) => {
   }
 })
 
-app.delete('/posts/:id', async (req, res) => {
+router.delete('/posts/:id', async (req, res) => {
   try {
     const post = await prisma.post.delete({
       where: { id: Number(req.params.id) },
@@ -230,6 +231,7 @@ app.delete('/posts/:id', async (req, res) => {
   }
 })
 
+app.use('/api', router)
 app.listen(8000, () => {
   console.log("Server is running on 'http://localhost:8000'.")
 })
