@@ -1,6 +1,11 @@
 export const UserSlim = {
   id: true,
-  uuid: true
+  uuid: true,
+  profile: {
+    select: {
+      name: true
+    }
+  }
 }
 
 export const UserFat = {
