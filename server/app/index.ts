@@ -27,7 +27,7 @@ app.get('/users/:id', async (req, res) => {
     select: UserFat
   })
 
-  if (!user) {
+  if (user == null) {
     return res.status(404).json({ message: 'User not found.' })
   }
 
