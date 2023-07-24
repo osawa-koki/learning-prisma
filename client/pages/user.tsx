@@ -18,7 +18,9 @@ interface IUser {
 
 const Component = (): JSX.Element => {
   const router = useRouter()
-  const { user_id: userId } = router.query
+  const { user_id: userId }: {
+    user_id?: string
+  } = router.query
 
   const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
 

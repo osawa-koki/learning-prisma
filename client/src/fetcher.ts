@@ -1,3 +1,3 @@
-export default async function fetcher(url: string): Promise<any> {
-  return fetch(url).then(r => r.ok ? r.json() : null)
+export default async function fetcher (url: string): Promise<any> {
+  return await fetch(url).then(async r => r.ok ? await r.json() : null)
 }
