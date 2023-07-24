@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { Alert, Table } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 import setting from '../setting'
 import Layout from '../components/Layout'
-import fetcher from '../src/fetcher'
+import { BsTrashFill } from 'react-icons/bs'
 
 interface IPost {
   id: number
@@ -27,7 +28,30 @@ const Component = (): JSX.Element => {
     post_id?: string
   } = router.query
 
-  const { data: post, error } = useSWR<IPost>(postId != null ? `${setting.apiPath}/api/posts/${postId}` : null, fetcher)
+  const { data: post, error } = useSWR<IPost>(postId != null ? `${setting.apiPath}/api/posts/${postId}` : null, async (url: string) => {
+    const response = await fetch(url)
+    if (response.status === 404) {
+      toast('Post not found.')
+      await router.push('/posts/')
+    }
+    return await response.json()
+  })
+
+  const deletePost = (): void => {
+    if (postId == null) return
+    if (confirm('Are you sure?')) {
+      fetch(`${setting.apiPath}/api/posts/${postId}`, {
+        method: 'DELETE'
+      })
+        .then(async () => {
+          await router.push('/posts/')
+          toast('Post deleted.')
+        })
+        .catch((err) => {
+          toast(err.message, { type: 'error' })
+        })
+    }
+  }
 
   if (error != null) {
     return <Alert variant="danger">{error}</Alert>
@@ -37,6 +61,9 @@ const Component = (): JSX.Element => {
   }
 
   return <>
+    <div className='d-flex flex-row-reverse'>
+      <BsTrashFill role='button' className='text-danger' onClick={deletePost} />
+    </div>
     <h2>Profile</h2>
     <Table striped bordered hover>
       <tbody>
