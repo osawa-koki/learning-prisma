@@ -148,7 +148,7 @@ router.get('/posts', async (req, res) => {
   }
 })
 
-app.get('/posts/:id', async (req, res) => {
+router.get('/posts/:id', async (req, res) => {
   try {
     const post = await prisma.post.findUnique({
       where: { id: Number(req.params.id) },
