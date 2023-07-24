@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { Alert, Table } from 'react-bootstrap'
 import { BsTrashFill } from 'react-icons/bs'
+import { toast } from 'react-toastify'
 import setting from '../setting'
 import Layout from '../components/Layout'
-import fetcher from '../src/fetcher'
 
 interface IUser {
   id: number
@@ -31,7 +31,14 @@ const Component = (): JSX.Element => {
     user_id?: string
   } = router.query
 
-  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
+  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, async (url: string) => {
+    const response = await fetch(url)
+    if (response.status === 404) {
+      toast('User not found.')
+      router.push('/users/')
+    }
+    return response.json()
+  })
 
   const deleteUser = (): void => {
     if (confirm('Are you sure?')) {
@@ -40,9 +47,10 @@ const Component = (): JSX.Element => {
       })
       .then(() => {
         router.push('/users/')
+        toast('User deleted.')
       })
       .catch((err) => {
-        console.error(err)
+        toast(err.message, { type: 'error' })
       })
     }
   }
@@ -71,15 +79,15 @@ const Component = (): JSX.Element => {
         </tr>
         <tr>
           <th>Name</th>
-          <td>{user?.profile.name}</td>
+          <td>{user?.profile?.name}</td>
         </tr>
         <tr>
           <th>Age</th>
-          <td>{user?.profile.age}</td>
+          <td>{user?.profile?.age}</td>
         </tr>
         <tr>
           <th>Birthday</th>
-          <td>{user?.profile.birthday.toString()}</td>
+          <td>{user?.profile?.birthday?.toString()}</td>
         </tr>
       </tbody>
     </Table>
@@ -94,7 +102,7 @@ const Component = (): JSX.Element => {
         </tr>
       </thead>
       <tbody>
-        {user?.posts.map((post) => (
+        {user?.posts?.map((post) => (
           <tr key={post.id}>
             <td>
               <Link href={`/post/?post_id=${post.id}`}>#{post.id}</Link>
