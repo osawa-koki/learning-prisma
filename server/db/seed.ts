@@ -32,26 +32,16 @@ import crypto from 'crypto'
   const posts = fs.readFileSync('./db/data/posts.csv', 'utf8')
   const postRecords = parse(posts, { columns: true })
   for (const record of postRecords) {
-    const authorId = Number(record.author_id)
-    const user = await prisma.user.findUnique({
-      where: { id: authorId },
-      select: { id: true }
-    })
-    if (!user) {
-      throw new Error(`User with id ${authorId} not found.`)
-    }
-    await prisma.user.update({
-      where: { id: authorId },
-      data: {
-        posts: {
-          create: {
-            title: record.title,
-            content: record.content
-          }
-        }
+    const post = await prisma.post.upsert({
+      where: { id: Number(record.id) },
+      update: {},
+      create: {
+        title: record.title,
+        content: record.content,
+        author_id: Number(record.author_id)
       }
     })
-    console.log(`Created post with title: ${record.title} (${authorId}).`)
+    console.log(`Created post with id: ${post.id}.`)
   }
 })()
   .then(() => {
