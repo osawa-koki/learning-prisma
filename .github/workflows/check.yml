@@ -17,7 +17,7 @@ env:
   server-directory: ./server
 
 jobs:
-  cloient-check:
+  client-check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
