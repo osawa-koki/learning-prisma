@@ -13,9 +13,34 @@ on:
       - 'issue/*'
 
 env:
+  client-directory: ./client
   server-directory: ./server
 
 jobs:
+  client-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 18.x, 20.x ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: yarn install
+        working-directory: ${{ env.client-directory }}
+      - name: Run tests
+        run: yarn test
+        working-directory: ${{ env.client-directory }}
+      - name: Linter check
+        run: yarn lint:check
+        working-directory: ${{ env.client-directory }}
+      - name: Check for security vulnerabilities
+        run: yarn audit
+        working-directory: ${{ env.client-directory }}
   server-check:
     runs-on: ubuntu-latest
     strategy:
