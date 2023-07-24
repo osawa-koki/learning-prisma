@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import Layout from '../components/Layout'
+import React from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import setting from '../setting'
 import { Alert, Table } from 'react-bootstrap'
+import setting from '../setting'
+import Layout from '../components/Layout'
+import fetcher from '../src/fetcher'
 
 interface IUser {
   id: number
@@ -13,18 +15,22 @@ interface IUser {
     age: number
     birthday: Date
   }
+  posts: [
+    {
+      id: number
+      title: string
+      content: string
+    }
+  ]
 }
 
 const Component = (): JSX.Element => {
   const router = useRouter()
-  const [userId, setUserId] = useState<string | null>(null)
+  const { user_id: userId }: {
+    user_id?: string
+  } = router.query
 
-  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null)
-
-  useEffect(() => {
-    console.log(router.query.user_id)
-    setUserId(router.query.user_id as string)
-  }, [router.query.user_id])
+  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
 
   if (error != null) {
     return <Alert variant="danger">{error}</Alert>
@@ -34,6 +40,7 @@ const Component = (): JSX.Element => {
   }
 
   return <>
+    <h2>Profile</h2>
     <Table striped bordered hover>
       <tbody>
         <tr>
@@ -56,6 +63,28 @@ const Component = (): JSX.Element => {
           <th>Birthday</th>
           <td>{user?.profile.birthday.toString()}</td>
         </tr>
+      </tbody>
+    </Table>
+    <hr />
+    <h2>Posts</h2>
+    <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Content</th>
+        </tr>
+      </thead>
+      <tbody>
+        {user?.posts.map((post) => (
+          <tr key={post.id}>
+            <td>
+              <Link href={`/post/?post_id=${post.id}`}>#{post.id}</Link>
+            </td>
+            <td>{post.title}</td>
+            <td>{post.content}</td>
+          </tr>
+        ))}
       </tbody>
     </Table>
   </>
