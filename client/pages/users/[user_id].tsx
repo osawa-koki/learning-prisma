@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import setting from '../../setting'
 import { Alert, Table } from 'react-bootstrap'
+import fetcher from '../../src/fetcher'
 
 interface IUser {
   id: number
@@ -17,14 +18,9 @@ interface IUser {
 
 const Component = (): JSX.Element => {
   const router = useRouter()
-  const [userId, setUserId] = useState<string | null>(null)
+  const { user_id: userId } = router.query
 
-  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null)
-
-  useEffect(() => {
-    console.log(router.query.user_id)
-    setUserId(router.query.user_id as string)
-  }, [router.query.user_id])
+  const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null, fetcher)
 
   if (error != null) {
     return <Alert variant="danger">{error}</Alert>
