@@ -4,6 +4,8 @@ import crypto from 'crypto'
 import { PrismaClient } from '@prisma/client'
 import dayjs from 'dayjs'
 import { UserFat, UserSlim } from '../dto/user'
+import { PostFat, PostSlim } from '../dto/post'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 const prisma = new PrismaClient()
 
@@ -86,6 +88,104 @@ app.delete('/users/:id', async (req, res) => {
   })
 
   res.json(user)
+})
+
+app.get('/posts', async (req, res) => {
+  try {
+    const posts = await prisma.post.findMany({
+      orderBy: {
+        id: 'asc'
+      },
+      select: PostSlim
+    })
+    res.json(posts)
+  } catch (e) {
+    res.status(500).json({ message: 'Internal server error.' })
+  }
+})
+
+app.get('/posts/:id', async (req, res) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(req.params.id) },
+      select: PostFat
+    })
+
+    if (post == null) {
+      return res.status(404).json({ message: 'Post not found.' })
+    }
+
+    res.json(post)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'Post not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
+})
+
+app.post('/posts', async (req, res) => {
+  try {
+    const title = req.body.title
+    const content = req.body.content
+    const author_id = Number(req.body.author_id)
+
+    const post = await prisma.post.create({
+      data: {
+        title,
+        content,
+        author_id
+      },
+      select: PostFat
+    })
+
+    res.json(post)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'Author not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
+})
+
+app.put('/posts/:id', async (req, res) => {
+  try {
+    const title = req.body.title
+    const post = await prisma.post.update({
+      where: { id: Number(req.params.id) },
+      data: {
+        title
+      },
+      select: PostFat
+    })
+
+    res.json(post)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'Post not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
+})
+
+app.delete('/posts/:id', async (req, res) => {
+  try {
+    const post = await prisma.post.delete({
+      where: { id: Number(req.params.id) },
+      select: PostFat
+    })
+
+    res.json(post)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'Post not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
 })
 
 app.listen(3000, () => {
