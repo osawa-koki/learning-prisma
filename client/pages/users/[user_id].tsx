@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import setting from '../../setting'
 import { Alert, Table } from 'react-bootstrap'
 
-type IUser = {
+interface IUser {
   id: number
   uuid: string
   profile: {
@@ -16,7 +16,7 @@ type IUser = {
 }
 
 const Component = (): JSX.Element => {
-  const router = useRouter();
+  const router = useRouter()
   const [userId, setUserId] = useState<string | null>(null)
 
   const { data: user, error } = useSWR<IUser>(userId != null ? `${setting.apiPath}/api/users/${userId}` : null)
