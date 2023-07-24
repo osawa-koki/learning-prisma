@@ -14,80 +14,116 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/users', async (req, res) => {
-  const users = await prisma.user.findMany({
-    select: UserSlim,
-    orderBy: {
-      id: 'asc'
-    }
-  })
-  res.json(users)
+  try {
+    const users = await prisma.user.findMany({
+      select: UserSlim,
+      orderBy: {
+        id: 'asc'
+      }
+    })
+    res.json(users)
+  } catch (e) {
+    res.status(500).json({ message: 'Internal server error.' })
+  }
 })
 
 app.get('/users/:id', async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: Number(req.params.id) },
-    select: UserFat
-  })
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(req.params.id) },
+      select: UserFat
+    })
 
-  if (user == null) {
-    return res.status(404).json({ message: 'User not found.' })
+    if (user == null) {
+      return res.status(404).json({ message: 'User not found.' })
+    }
+
+    res.json(user)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'User not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
   }
-
-  res.json(user)
 })
 
 app.post('/users', async (req, res) => {
-  const password = req.body.password
-  const name = req.body.name
-  const age = Number(req.body.age)
-  const birthday = req.body.birthday
-  const posts = req.body.posts
+  try {
+    const password = req.body.password
+    const name = req.body.name
+    const age = Number(req.body.age)
+    const birthday = req.body.birthday
+    const posts = req.body.posts
 
-  const user = await prisma.user.create({
-    data: {
-      password,
-      uuid: crypto.randomUUID(),
-      profile: {
-        create: {
-          name,
-          age,
-          birthday: dayjs(birthday).toDate()
+    const user = await prisma.user.create({
+      data: {
+        password,
+        uuid: crypto.randomUUID(),
+        profile: {
+          create: {
+            name,
+            age,
+            birthday: dayjs(birthday).toDate()
+          }
+        },
+        posts: {
+          create: posts
         }
       },
-      posts: {
-        create: posts
-      }
-    },
-    select: UserFat
-  })
+      select: UserFat
+    })
 
-  res.json(user)
+    res.json(user)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'User not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
 })
 
 app.put('/users/:id', async (req, res) => {
-  const name = req.body.name
-  const user = await prisma.user.update({
-    where: { id: Number(req.params.id) },
-    data: {
-      profile: {
-        update: {
-          name
+  try {
+    const name = req.body.name
+    const user = await prisma.user.update({
+      where: { id: Number(req.params.id) },
+      data: {
+        profile: {
+          update: {
+            name
+          }
         }
-      }
-    },
-    select: UserFat
-  })
+      },
+      select: UserFat
+    })
 
-  res.json(user)
+    res.json(user)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'User not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
 })
 
 app.delete('/users/:id', async (req, res) => {
-  const user = await prisma.user.delete({
-    where: { id: Number(req.params.id) },
-    select: UserFat
-  })
+  try {
+    const user = await prisma.user.delete({
+      where: { id: Number(req.params.id) },
+      select: UserFat
+    })
 
-  res.json(user)
+    res.json(user)
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      res.status(404).json({ message: 'User not found.' })
+      return
+    }
+    res.status(500).json({ message: 'Internal server error.' })
+  }
 })
 
 app.get('/posts', async (req, res) => {
