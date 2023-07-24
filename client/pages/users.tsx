@@ -55,8 +55,9 @@ export default function UsersPage (): JSX.Element {
     <Layout>
       <h1 className='d-flex justify-content-between'>
         Users
-        <Badge role='button' onClick={() => {
-          router.push('/users/new')
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <Badge role='button' onClick={async () => {
+          await router.push('/users/new')
         }}>New</Badge>
       </h1>
       <Component />
