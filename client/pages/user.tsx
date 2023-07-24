@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Layout from '../../components/Layout'
+import Layout from '../components/Layout'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import setting from '../../setting'
+import setting from '../setting'
 import { Alert, Table } from 'react-bootstrap'
 import fetcher from '../../src/fetcher'
 
