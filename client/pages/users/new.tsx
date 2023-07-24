@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import Layout from '../../components/Layout'
+import router from 'next/router'
 import { Button, Form } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import dayjs from 'dayjs'
+import Layout from '../../components/Layout'
 import setting from '../../setting'
-import router from 'next/router'
 
 export default function UserForm (): JSX.Element {
   const [name, setName] = useState('user xxx')

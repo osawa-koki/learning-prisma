@@ -1,7 +1,8 @@
 import React from 'react'
 import Layout from '../components/Layout'
+import router from 'next/router'
 import useSWR from 'swr'
-import { Alert, Table } from 'react-bootstrap'
+import { Alert, Badge, Table } from 'react-bootstrap'
 import setting from '../setting'
 import Link from 'next/link'
 import fetcher from '../src/fetcher'
@@ -49,7 +50,13 @@ const Component = (): JSX.Element => {
 export default function PostsPage (): JSX.Element {
   return (
     <Layout>
-      <h1>Posts</h1>
+      <h1 className='d-flex justify-content-between'>
+        Posts
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <Badge role='button' onClick={async () => {
+          await router.push('/posts/new')
+        }}>New</Badge>
+      </h1>
       <Component />
     </Layout>
   )
