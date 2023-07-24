@@ -14,7 +14,7 @@ interface IUser {
     name: string
     age: number
     birthday: Date
-  },
+  }
   posts: [
     {
       id: number
